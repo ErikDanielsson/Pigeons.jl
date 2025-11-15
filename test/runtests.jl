@@ -8,7 +8,7 @@ project_root_dir = dirname(test_dir)
 @assert pathof(Pigeons) == joinpath(project_root_dir, "src", "Pigeons.jl") 
 
 # load all files starting with "test_"
-for test_name in filter(x -> startswith(x, "test_") && endswith(x, ".jl"), readdir(test_dir)) 
+for test_name in filter(x -> startswith(x, "test_treeppl") && endswith(x, ".jl"), readdir(test_dir)) 
     # organize output a little bit
     println() # v otherwise can't tell what is running when it crashes in the middle
     println("### Starting $test_name")

@@ -19,7 +19,7 @@ result_path = treeppl/crbd_results
 # Compile the TreePPL model with the correct flags using a Docker container with Podman
 tppl_bin = tppl_compile_model(
     model_path, bin_path;
-    container_engine="podman",
+    container_engine="docker",
     img_name="docker.io/danielssonerik/treeppl:main
 ) 
 
@@ -89,10 +89,23 @@ function construct_docker_podman_cmd(
     end
 
     model_dir = abspath(dirname(model_path))
+    println("Model dir: $model_dir")
+    println("Model name: $(basename(model_path))")
+    println("Model path: $model_path")
+    println("Model dir exists: $(isdir(model_dir))")
+    println("Model file exists: $(isfile(model_path))")
     bin_dir = abspath(dirname(bin))
     container_sh_cmd = string(`tpplc $args /in/$(basename(model_path)) --output /out/$(basename(bin))`)
     # This simple command for running the TreePPL compiler mounts the model directory and the directory
     # where we want the binary. It then calls the compiler inside the container with the arguments.
+    println(`
+    $container_engine run
+        --rm
+        -v $model_dir:/in
+        -v $bin_dir:/out
+        $img_name
+        sh -c "$container_sh_cmd"
+    `)
     return `
     $container_engine run
         --rm
@@ -141,6 +154,7 @@ function tppl_compile_model(
     if container_engine == nothing
         run(`$tpplc $args $model_path --output $bin`)
     elseif container_engine in ["podman", "docker"]
+        println("$model_path: Compiling TreePPL model using $container_engine container...")
         run(construct_docker_podman_cmd(model_path, bin, args, img_name, container_engine))
     else
         error("Unsupported container engine: $container_engine")
