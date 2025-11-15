@@ -27,15 +27,6 @@ function test_model_runs(model, models_dir, container_engine, img_name)
     println("Constructing TreePPL target for model: $model_name")
     tppl_target = Pigeons.tppl_construct_target(tppl_binary, data_path, result_dir)
 
-    # Check that the binary runs
-    envs = Pair{String, Any}["PPL_SEED" => Pigeons.java_seed(rng)]
-    # Ensure that the output directory exists
-    mkpath(tppl_target.output_dir) 
-    # Instruct TreePPL to save samples to file
-    push!(envs, "PPL_OUTPUT" => "$(target.output_dir)/tppl-replica-$replica_index.json")
-    cmd_with_env = addenv(target.command, envs...)
-
-
     println("Running Pigeons on TreePPL model: $model_name")
     pt = pigeons(target=tppl_target, n_rounds = 2, n_chains = 2)
     Pigeons.kill_child_processes(pt)

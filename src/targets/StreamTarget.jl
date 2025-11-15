@@ -106,6 +106,7 @@ function invoke_worker(
         request::AbstractString, 
         return_type::Type{T} = Nothing) where {T}
     println(state.worker_process, request)
+    prefix = ""
     try 
         prefix = expect!(state.worker_process, "response(")
     catch e
