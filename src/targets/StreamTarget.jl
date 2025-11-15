@@ -106,7 +106,13 @@ function invoke_worker(
         request::AbstractString, 
         return_type::Type{T} = Nothing) where {T}
     println(state.worker_process, request)
-    prefix = expect!(state.worker_process, "response(")
+    try 
+        prefix = expect!(state.worker_process, "response(")
+    catch e
+        println(e)
+        println(state.worker_process.before)
+        rethrow(e)
+    end
     if state.replica_index == 1 && 
             length(prefix) > 4 # otherwise running on windows spits a lot of empty lines
         # display output for replica 1 to show e.g. info messages

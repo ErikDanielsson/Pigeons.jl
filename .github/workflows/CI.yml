@@ -97,15 +97,6 @@ jobs:
       JULIA_MPI_TEST_BINARY: OpenMPI_jll
       JULIA_MPI_TEST_ABI: OpenMPI
     steps:
-    - name: Test TreePPL Docker
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        docker --version
-        docker run --rm \
-          -v /root/.pigeons/treeppl/models/lang:/in \
-          -v /root/.pigeons/treeppl/models/lang:/out \
-          docker.io/danielssonerik/treeppl:9d35622 \
-          sh -c '\`tpplc -m mcmc-lightweight --pigeons --pigeons-explore-steps 2 --cps full --mcmc-lw-gprob 0.1 --drift 1.0 --sampling-period 1 --kernel --align --incremental-printing /in/coin.tppl --output /out/coin.bin\`' 
     - name: Checkout
       uses: actions/checkout@v5
     - uses: actions/setup-java@v4
